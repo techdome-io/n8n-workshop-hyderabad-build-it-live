@@ -2,10 +2,25 @@
 
 Hands-on n8n workshop in Hyderabad. This repo has everything you need to follow along: install guides for Linux, macOS and Windows, plus the workflow JSONs we build live.
 
+## Quick start (one click)
+
+Download this repo (green **Code** button → **Download ZIP**, then unzip) and double-click the file for your system:
+
+| System | File to double-click |
+|---|---|
+| Windows | `start-n8n.bat` |
+| macOS | `start-n8n.command` (first time: right-click → Open) |
+| Linux | `start-n8n.sh` (or run `./start-n8n.sh`) |
+
+It starts n8n and opens http://localhost:5678 in your browser. It needs **Docker Desktop** or **Node.js** installed first (the script tells you if neither is found). Close the window or press Ctrl+C to stop; your workflows are kept.
+
 ## What's inside
 
 ```
 ├── README.md
+├── start-n8n.bat       # Windows one-click
+├── start-n8n.command   # macOS one-click
+├── start-n8n.sh        # Linux one-click
 ├── install/
 │   ├── linux.md
 │   ├── macos.md
