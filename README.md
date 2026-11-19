@@ -12,7 +12,7 @@ Download this repo (green **Code** button → **Download ZIP**, then unzip) and 
 | macOS | `start-n8n.command` (first time: right-click → Open) |
 | Linux | `start-n8n.sh` (or run `./start-n8n.sh`) |
 
-It starts n8n and opens http://localhost:5678 in your browser. It needs **Docker Desktop** or **Node.js** installed first (the script tells you if neither is found). Close the window or press Ctrl+C to stop; your workflows are kept.
+It starts n8n, opens http://localhost:5678 in your browser, and **automatically imports every workflow in `workflows/`** the first time (you'll find them in your Workflows list; add your own credentials, then activate). It needs **Docker Desktop** or **Node.js** installed first (the script tells you if neither is found). Close the window or press Ctrl+C to stop; your workflows are kept.
 
 ## What's inside
 
