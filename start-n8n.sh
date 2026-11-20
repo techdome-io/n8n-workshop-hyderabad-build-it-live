@@ -19,7 +19,7 @@ if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
     -v "$VOL":/home/node/.n8n \
     -v "$PWD/setup:/setup:ro" \
     -v "$PWD/workflows:/workflows:ro" \
-    --entrypoint sh "docker.n8n.io/n8nio/n8n:$V" /setup/first-run.sh
+    --entrypoint sh "docker.n8n.io/n8nio/n8n:$V" -c 'if [ -f /setup/first-run.sh ]; then sh /setup/first-run.sh; else echo "Setup folder not shared with Docker - starting n8n without first-run setup."; exec n8n start; fi'
 elif command -v npx >/dev/null 2>&1; then
   echo "Docker not found. Starting n8n $V with Node.js... (press Ctrl+C to stop)"
   open_browser

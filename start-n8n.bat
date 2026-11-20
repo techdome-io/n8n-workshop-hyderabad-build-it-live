@@ -9,15 +9,15 @@ if "%N8N_VOLUME%"=="" set N8N_VOLUME=n8n_data
 docker info >nul 2>&1
 if %errorlevel%==0 (
   echo Starting n8n %N8N_VERSION% with Docker... close this window or press Ctrl+C to stop. Your data is kept.
-  start "" /b cmd /c "timeout /t 12 /nobreak >nul & start %URL%"
-  docker run -it --rm --name n8n -p 5678:5678 -e GENERIC_TIMEZONE=Asia/Kolkata -e TZ=Asia/Kolkata -v %N8N_VOLUME%:/home/node/.n8n -v "%cd%\setup:/setup:ro" -v "%cd%\workflows:/workflows:ro" --entrypoint sh docker.n8n.io/n8nio/n8n:%N8N_VERSION% /setup/first-run.sh
+  start "" /b cmd /c "ping -n 13 127.0.0.1 >nul & start %URL%"
+  docker run -it --rm --name n8n -p 5678:5678 -e GENERIC_TIMEZONE=Asia/Kolkata -e TZ=Asia/Kolkata -v %N8N_VOLUME%:/home/node/.n8n -v "%cd%\setup:/setup:ro" -v "%cd%\workflows:/workflows:ro" --entrypoint sh docker.n8n.io/n8nio/n8n:%N8N_VERSION% -c "if [ -f /setup/first-run.sh ]; then sh /setup/first-run.sh; else echo Setup folder not shared with Docker - starting n8n without first-run setup.; exec n8n start; fi"
   goto :end
 )
 
 where npx >nul 2>&1
 if %errorlevel%==0 (
   echo Docker not found. Starting n8n %N8N_VERSION% with Node.js... press Ctrl+C to stop.
-  start "" /b cmd /c "timeout /t 12 /nobreak >nul & start %URL%"
+  start "" /b cmd /c "ping -n 13 127.0.0.1 >nul & start %URL%"
   if not exist "%USERPROFILE%\.n8n\.workshop_setup_done" (
     echo First run: preparing the workshop - data tables and starter workflows...
     call npx --yes n8n@%N8N_VERSION% import:workflow --input=setup/setup-data-tables.json

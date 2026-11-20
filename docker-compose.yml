@@ -7,7 +7,7 @@ services:
     environment:
       GENERIC_TIMEZONE: Asia/Kolkata
       TZ: Asia/Kolkata
-    entrypoint: ["sh", "/setup/first-run.sh"]
+    entrypoint: ["sh", "-c", 'if [ -f /setup/first-run.sh ]; then sh /setup/first-run.sh; else exec n8n start; fi']
     volumes:
       - n8n_data:/home/node/.n8n
       - ./setup:/setup:ro

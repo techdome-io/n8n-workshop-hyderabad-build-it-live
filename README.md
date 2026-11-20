@@ -129,6 +129,7 @@ Then click **Execute workflow** to test, and toggle **Active** to run it automat
 | Docker permission denied (Linux) | `sudo usermod -aG docker $USER`, then log out and in |
 | macOS says the file can't be opened | Right-click → Open, or run `chmod +x start-n8n.command` |
 | Windows SmartScreen warning on the `.bat` | Click **More info → Run anyway** |
+| Window says "Setup folder not shared with Docker" | Docker can't read the folder. Move the unzipped folder somewhere simple (e.g. your home folder, not Downloads/Desktop/OneDrive), allow Docker file access if macOS or Windows asks, and run again. Or create the tables by hand from `data/*.csv` |
 | Starter workflows or data tables missing | The first-run setup runs only once. See "Start over" below |
 | Webhook URLs don't work from outside | Use `npx n8n start --tunnel` for testing only |
 | Credential warning on a node | Add your own credential, none are shipped in the JSON |
