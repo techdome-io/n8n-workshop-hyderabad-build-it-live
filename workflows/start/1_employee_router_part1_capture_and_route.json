@@ -1,0 +1,412 @@
+{
+  "name": "Employee Request Router - Part 1: Capture and Route",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Submit an internal request",
+        "formDescription": "IT access, equipment, or admin support - we will route it to the right team.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "fieldName": "fullName",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Work Email",
+              "fieldType": "email",
+              "fieldName": "workEmail",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Request Type",
+              "fieldType": "dropdown",
+              "fieldName": "requestType",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "IT Access"
+                  },
+                  {
+                    "option": "Equipment"
+                  },
+                  {
+                    "option": "Admin Support"
+                  },
+                  {
+                    "option": "Other"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Description",
+              "fieldType": "textarea",
+              "fieldName": "description",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Urgency",
+              "fieldType": "dropdown",
+              "fieldName": "urgency",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Low"
+                  },
+                  {
+                    "option": "Medium"
+                  },
+                  {
+                    "option": "High"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "2ed9d079-bebb-4865-afae-05076c80e61a",
+      "name": "Employee Request Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        288
+      ],
+      "webhookId": "4c042471-dff9-424f-8ecd-7105d8f4b1fc"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.requestType }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "IT Access",
+                    "id": "e4c6d60e-7bae-4b6b-950a-eb6087863c76"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.requestType }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "Equipment",
+                    "id": "e848233a-2b96-4733-ba2b-e7959df96d5f"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.requestType }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "Admin Support",
+                    "id": "419b6ccf-c61c-4ec2-b48a-f051880b2184"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Other"
+        }
+      },
+      "id": "d94ed4ed-e4bc-4ba0-a2b0-b91f9fffc5cd",
+      "name": "Route by Request Type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "approverEmail",
+              "name": "approverEmail",
+              "value": "your-email@example.com",
+              "type": "string"
+            },
+            {
+              "id": "queue",
+              "name": "queue",
+              "value": "IT Support",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "1279bda7-a12b-4a1f-9b17-b9865f2fade5",
+      "name": "IT Queue",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "approverEmail",
+              "name": "approverEmail",
+              "value": "your-email@example.com",
+              "type": "string"
+            },
+            {
+              "id": "queue",
+              "name": "queue",
+              "value": "Facilities",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "61d0e65f-5cc6-49c3-9d64-c2ad60697508",
+      "name": "Equipment Queue",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "approverEmail",
+              "name": "approverEmail",
+              "value": "your-email@example.com",
+              "type": "string"
+            },
+            {
+              "id": "queue",
+              "name": "queue",
+              "value": "Admin",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "0a739063-0843-4f1a-a7c2-cc3121e119f3",
+      "name": "Admin Queue",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "approverEmail",
+              "name": "approverEmail",
+              "value": "your-email@example.com",
+              "type": "string"
+            },
+            {
+              "id": "queue",
+              "name": "queue",
+              "value": "Operations",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "6bcd62a0-8801-4d88-b35c-344f00db9d37",
+      "name": "Ops Queue (Other)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "id": "4cbc24cf-50b8-4a29-86df-79c5722e5e14",
+      "name": "Request With Approver",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        672,
+        256
+      ]
+    },
+    {
+      "id": "1b1d50b8-6b1d-4dec-a5f8-c0965683025b",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        -380
+      ],
+      "parameters": {
+        "content": "## Part 1 of 3: Capture the request and find the approver\n**Employee Request and Approval Router**\n\n1. Employee Request Form: a public form. The employee picks a request type (IT Access, Equipment, Admin Support, or Other), adds a description and urgency, and gives their name and email.\n\n2. Route by Request Type: reads the request type the employee picked and sends it down one of four separate paths, one path per type. Anything that does not match the first three falls into the Other path automatically.\n\n3. IT Queue, Equipment Queue, Admin Queue, Ops Queue (Other): one small step per path. Each one simply tags the request with who should approve it and which team it belongs to, so the rest of the workflow knows where it is headed. Update the approver email inside each of these four nodes to the real person in your team who should approve that type of request.\n\n4. Request With Approver: brings all four paths back together into one single flow again. It is a Merge node set to Append, with four inputs, one input for each path above. Each path is wired into a different input number (0, 1, 2, 3), and whichever path actually ran for a given request simply gets appended onto the same output. This way the rest of the workflow does not need to know which path the request came down.\n\nImport part 2 next and connect Request With Approver into Log Request.",
+        "width": 980,
+        "height": 340
+      }
+    }
+  ],
+  "connections": {
+    "Employee Request Form": {
+      "main": [
+        [
+          {
+            "node": "Route by Request Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Request Type": {
+      "main": [
+        [
+          {
+            "node": "IT Queue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Equipment Queue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Admin Queue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ops Queue (Other)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IT Queue": {
+      "main": [
+        [
+          {
+            "node": "Request With Approver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Equipment Queue": {
+      "main": [
+        [
+          {
+            "node": "Request With Approver",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Admin Queue": {
+      "main": [
+        [
+          {
+            "node": "Request With Approver",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Ops Queue (Other)": {
+      "main": [
+        [
+          {
+            "node": "Request With Approver",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {}
+}

@@ -1,0 +1,194 @@
+{
+  "id": "setupDataTables01",
+  "name": "Setup - create data tables (runs automatically)",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "events": [
+          "init",
+          "activate"
+        ]
+      },
+      "id": "00000000-0000-4000-8000-000000000009",
+      "name": "On instance start",
+      "type": "n8n-nodes-base.n8nTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "leads",
+        "columns": {
+          "column": [
+            {
+              "name": "fullName",
+              "type": "string"
+            },
+            {
+              "name": "workEmail",
+              "type": "string"
+            },
+            {
+              "name": "company",
+              "type": "string"
+            },
+            {
+              "name": "role",
+              "type": "string"
+            },
+            {
+              "name": "message",
+              "type": "string"
+            },
+            {
+              "name": "domain",
+              "type": "string"
+            },
+            {
+              "name": "fitScore",
+              "type": "number"
+            },
+            {
+              "name": "urgency",
+              "type": "string"
+            },
+            {
+              "name": "budgetSignal",
+              "type": "string"
+            },
+            {
+              "name": "likelyUseCase",
+              "type": "string"
+            },
+            {
+              "name": "summary",
+              "type": "string"
+            },
+            {
+              "name": "suggestedOpener",
+              "type": "string"
+            },
+            {
+              "name": "submittedAt",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      },
+      "id": "00000000-0000-4000-8000-000000000001",
+      "name": "Create leads table",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "employee_requests",
+        "columns": {
+          "column": [
+            {
+              "name": "fullName",
+              "type": "string"
+            },
+            {
+              "name": "workEmail",
+              "type": "string"
+            },
+            {
+              "name": "requestType",
+              "type": "string"
+            },
+            {
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "name": "urgency",
+              "type": "string"
+            },
+            {
+              "name": "approverEmail",
+              "type": "string"
+            },
+            {
+              "name": "queue",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "type": "string"
+            },
+            {
+              "name": "submittedAt",
+              "type": "string"
+            },
+            {
+              "name": "decision",
+              "type": "string"
+            },
+            {
+              "name": "decidedAt",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      },
+      "id": "00000000-0000-4000-8000-000000000002",
+      "name": "Create employee_requests table",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "On instance start": {
+      "main": [
+        [
+          {
+            "node": "Create leads table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create leads table": {
+      "main": [
+        [
+          {
+            "node": "Create employee_requests table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "name": "AI Lead Intelligence - Part 2: Score with AI",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Score and summarize this inbound lead for Techdome, a custom software development company and product venture studio founded in 2020 by Rahul Joshi (CEO), based in Hyderabad, India with hubs in Indore and Mumbai, and legal entities in the US and UAE. Team of 110+ people, 80+ engineers.\n\nAbout Techdome - what we actually sell:\n1. Venture Studio / MVP development: taking a product from blank repo to launch in about 8 weeks, fixed-scope sprints starting at $8,000.\n2. Staff augmentation and dedicated engineering pods: senior React/Next.js, Node.js, full-stack, Python/AI-LLM, n8n, and DevOps engineers embedded in 8-14 business days, on a monthly retainer with daily US/EU overlap.\n3. n8n and AI automation (our flagship practice): self-hosted n8n clusters, Zapier/Make-to-n8n migrations, AI agents, AI voice agents, GraphRAG knowledge systems, WhatsApp automation, document/OCR extraction, and HubSpot/Salesforce CRM integration. Sprints from $8,000, retainers from $1,000/month.\n4. Global Capability Centre (GCC): we recruit, manage, and run a named engineering team in India for a client, with an option to hand it over later.\nWe also do Azure migration/modernization and build compliance-first systems (HIPAA, SOC2, PCI-DSS, GDPR, WCAG).\n\nStrongest-fit signals (push fit_score up):\n- Founders or startups needing an MVP built\n- CTOs needing senior engineers fast\n- Teams with manual workflows, especially outgrowing Zapier/Make or wanting self-hosted n8n\n- Companies wanting AI agents, voice agents, or RAG over their own documents\n- Regulated healthcare or fintech builds needing compliance\n- Enterprises considering an India engineering centre\n- Our strongest verticals: healthcare/telehealth, fintech (lending, mortgage, insurance), EdTech, SaaS/IT, e-commerce/retail, manufacturing/logistics, public sector\n\nWeak-fit signals (push fit_score down, and say so plainly in likely_use_case rather than forcing a fit):\n- Pure cybersecurity or managed security work\n- Generic IT-enabled services / BPO\n- Blockchain\n- Training a custom foundation-scale LLM from scratch\n- Buyers who only want open-ended hourly billing\n\nOur own in-house products, if relevant context: Sparrow (open-source API testing), JustInterview.ai (AI technical screening), Aether Voice (voice AI agents), Saral Funding (loan enablement), Catalyst (AI industrial intelligence for manufacturing), Geolytics (SEO + AI-search visibility), Techdome ARC.\n\nLead name: {{ $('Normalize Lead').item.json.fullName }}\nRole: {{ $('Normalize Lead').item.json.role }}\nCompany: {{ $('Normalize Lead').item.json.company }}\nWhat they want to solve: {{ $('Normalize Lead').item.json.message }}\nCompany domain: {{ $('Normalize Lead').item.json.domain }}\nCompany enrichment data (JSON): {{ JSON.stringify($json) }}\n\nReturn fit_score (1-10, based on how well their need matches one of the four things Techdome actually sells above), urgency (low, medium, or high), budget_signal, likely_use_case (phrased in terms of the specific Techdome service or product that applies), one_line_summary, and suggested_opener (a 2-3 sentence personalized follow-up message that names the specific service or product that fits their need).",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a sales development assistant that scores and summarizes inbound leads for a startup. Be concise and concrete."
+        }
+      },
+      "id": "afb8c4cb-929c-4924-92a7-17a84f3dfe87",
+      "name": "Score Lead with AI",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        672,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "863a31ea-69ee-46aa-960e-3d5849438553",
+      "name": "OpenAI Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"fit_score\": 8, \"urgency\": \"high\", \"budget_signal\": \"Mentioned an approved Q1 budget\", \"likely_use_case\": \"Automating inbound lead qualification\", \"one_line_summary\": \"Ops lead at a mid-size software company evaluating automation now\", \"suggested_opener\": \"Hi Jane, saw you are exploring ways to speed up lead qualification...\"}"
+      },
+      "id": "76a9e8e9-1de3-47a5-9594-5e495e27691c",
+      "name": "Lead Score Schema",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        864,
+        336
+      ]
+    },
+    {
+      "id": "88616b52-c90e-4357-a03b-04fd560d9839",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        560,
+        600
+      ],
+      "parameters": {
+        "content": "## Part 2 of 3: Score the lead with AI\n**AI Lead Intelligence and Qualification**\n\nThis is the part that reads the lead and decides how good a fit they are.\n\n1. Score Lead with AI: sends the lead's details to an AI model and asks it to return a fit score, how urgent the lead sounds, and a suggested reply.\n2. OpenAI Model: the model doing the thinking. Add your own OpenAI credential here and leave the rest as it is.\n3. Lead Score Schema: tells the AI exactly which fields to send back, so the answer always comes back clean and usable.\n\nA short note on the prompt: it describes what our company actually sells and what a good fit looks like, so the AI scores leads against real services instead of just how excited the message sounds. You do not need to change the prompt, it is ready to use once the credential is added.\n\nImport this after part 1 and connect Enrich Company - Apollo into Score Lead with AI.",
+        "width": 620,
+        "height": 440
+      }
+    }
+  ],
+  "connections": {
+    "OpenAI Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Score Lead with AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead Score Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Score Lead with AI",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich Company - Apollo": {
+      "main": [
+        [
+          {
+            "node": "Score Lead with AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {}
+}

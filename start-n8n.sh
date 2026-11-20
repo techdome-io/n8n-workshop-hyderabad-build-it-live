@@ -1,37 +1,40 @@
 #!/usr/bin/env bash
 # One-click start for n8n (Linux). Uses Docker if available, otherwise Node.js.
-# Workflows in ./workflows/*.json are imported automatically on the first run.
+# On the first run it also creates the Data Tables and imports the starter workflows.
 cd "$(dirname "$0")"
 URL="http://localhost:5678"
+V="${N8N_VERSION:-2.48.7}"          # n8n version this workshop was tested on
+VOL="${N8N_VOLUME:-n8n_data}"       # Docker volume that keeps your data
 
 open_browser() {
-  ( sleep 8; (xdg-open "$URL" || open "$URL") >/dev/null 2>&1 ) &
+  ( sleep 10; (xdg-open "$URL" || open "$URL") >/dev/null 2>&1 ) &
 }
 
 if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
-  echo "Starting n8n with Docker... (press Ctrl+C to stop; your data is kept)"
+  echo "Starting n8n $V with Docker... (press Ctrl+C to stop; your data is kept)"
   open_browser
   TTY=""; [ -t 0 ] && TTY="-it"
   docker run $TTY --rm --name n8n -p 5678:5678 \
     -e GENERIC_TIMEZONE=Asia/Kolkata -e TZ=Asia/Kolkata \
-    -v n8n_data:/home/node/.n8n \
+    -v "$VOL":/home/node/.n8n \
+    -v "$PWD/setup:/setup:ro" \
     -v "$PWD/workflows:/workflows:ro" \
-    --entrypoint sh docker.n8n.io/n8nio/n8n -c '
-      M=/home/node/.n8n/.workflows_imported
-      if [ ! -f "$M" ] && ls /workflows/*.json >/dev/null 2>&1; then
-        echo "Importing workflows..."
-        n8n import:workflow --separate --input=/workflows/ && touch "$M"
-      fi
-      exec n8n start'
+    --entrypoint sh "docker.n8n.io/n8nio/n8n:$V" /setup/first-run.sh
 elif command -v npx >/dev/null 2>&1; then
-  echo "Docker not found. Starting n8n with Node.js... (press Ctrl+C to stop)"
+  echo "Docker not found. Starting n8n $V with Node.js... (press Ctrl+C to stop)"
   open_browser
-  M="$HOME/.n8n/.workflows_imported"
-  if [ ! -f "$M" ] && ls workflows/*.json >/dev/null 2>&1; then
-    echo "Importing workflows..."
-    npx --yes n8n import:workflow --separate --input=workflows/ && touch "$M"
+  M="$HOME/.n8n/.workshop_setup_done"
+  if [ ! -f "$M" ]; then
+    echo "First run: preparing the workshop (data tables + starter workflows)..."
+    if npx --yes "n8n@$V" import:workflow --input=setup/setup-data-tables.json \
+       && npx --yes "n8n@$V" publish:workflow --id=setupDataTables01 \
+       && { ls workflows/start/*.json >/dev/null 2>&1 && npx --yes "n8n@$V" import:workflow --separate --input=workflows/start/ || true; }; then
+      mkdir -p "$HOME/.n8n" && touch "$M"
+    else
+      echo "WARNING: workshop preparation failed; import the files in setup/ and workflows/ by hand."
+    fi
   fi
-  npx --yes n8n
+  npx --yes "n8n@$V"
 else
   echo "Neither Docker nor Node.js is installed."
   echo "Install one of them, then run this again:"

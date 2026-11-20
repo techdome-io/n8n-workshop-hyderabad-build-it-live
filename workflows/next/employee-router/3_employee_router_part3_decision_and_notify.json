@@ -1,0 +1,260 @@
+{
+  "name": "Employee Request Router - Part 3: Decision and Notify",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.data.approved }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              },
+              "rightValue": true,
+              "id": "754b980c-6d85-4313-aaad-4970024f61a9"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "811fc523-415f-48ce-8886-53f6cbd3ea9a",
+      "name": "Is Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "employee_requests"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Log Request').item.json.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "Approved",
+            "decision": "Approved",
+            "decidedAt": "={{ $now.toISO() }}"
+          },
+          "schema": [
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "decision",
+              "displayName": "decision",
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "decidedAt",
+              "displayName": "decidedAt",
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "354c5719-f076-47f9-96d8-ae0bc9a19a54",
+      "name": "Mark Approved",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1568,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Request With Approver').item.json.workEmail }}",
+        "subject": "Your request has been approved",
+        "emailType": "text",
+        "message": "=Hi {{ $('Request With Approver').item.json.fullName }}, your {{ $('Request With Approver').item.json.requestType }} request has been approved. The {{ $('Request With Approver').item.json.queue }} team will follow up shortly.",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "d4c036ca-0184-46cf-9beb-9755007d9b27",
+      "name": "Notify Employee - Approved",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1792,
+        192
+      ],
+      "webhookId": "c3aaba8f-cda2-4a66-a456-02de902a9cb7"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "employee_requests"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Log Request').item.json.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "Rejected",
+            "decision": "Rejected",
+            "decidedAt": "={{ $now.toISO() }}"
+          },
+          "schema": [
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "decision",
+              "displayName": "decision",
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "decidedAt",
+              "displayName": "decidedAt",
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "46bb509e-2abc-4878-ae1b-4bf62662580e",
+      "name": "Mark Rejected",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1568,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Request With Approver').item.json.workEmail }}",
+        "subject": "Update on your request",
+        "emailType": "text",
+        "message": "=Hi {{ $('Request With Approver').item.json.fullName }}, your {{ $('Request With Approver').item.json.requestType }} request was not approved this time. Reach out to the {{ $('Request With Approver').item.json.queue }} team if you have questions.",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "f857c41f-b0e0-4ce8-ad9d-89f1706ced73",
+      "name": "Notify Employee - Declined",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1792,
+        384
+      ],
+      "webhookId": "db7dd921-83e3-43cf-9892-776bab24e6d1"
+    },
+    {
+      "id": "9279d7d6-66b4-4953-8e72-a39293a001b0",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        -340
+      ],
+      "parameters": {
+        "content": "## Part 3 of 3: Record the decision and notify the employee\n**Employee Request and Approval Router**\n\n1. Is Approved?: checks which button the approver clicked on the email from part 2, Approve or Decline, and splits the workflow into two paths based on that answer.\n\n2. Mark Approved: if the request was approved, this updates that exact same row in the Data Table, setting its status to Approved and recording the time of the decision.\n\n3. Notify Employee - Approved: emails the employee to let them know their request was approved and that the right team will follow up.\n\n4. Mark Rejected: if the request was declined instead, this updates the same row with status Rejected and the time of the decision.\n\n5. Notify Employee - Declined: emails the employee to let them know their request was not approved this time.\n\nImport this after part 2 and connect Request Approval into Is Approved?.",
+        "width": 760,
+        "height": 320
+      }
+    }
+  ],
+  "connections": {
+    "Is Approved?": {
+      "main": [
+        [
+          {
+            "node": "Mark Approved",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Rejected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Approved": {
+      "main": [
+        [
+          {
+            "node": "Notify Employee - Approved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Rejected": {
+      "main": [
+        [
+          {
+            "node": "Notify Employee - Declined",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request Approval": {
+      "main": [
+        [
+          {
+            "node": "Is Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {}
+}

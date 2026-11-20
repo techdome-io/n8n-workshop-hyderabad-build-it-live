@@ -1,0 +1,217 @@
+{
+  "name": "Employee Request Router - Part 2: Log and Request Approval",
+  "nodes": [
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "employee_requests"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fullName": "={{ $('Request With Approver').item.json.fullName }}",
+            "workEmail": "={{ $('Request With Approver').item.json.workEmail }}",
+            "requestType": "={{ $('Request With Approver').item.json.requestType }}",
+            "description": "={{ $('Request With Approver').item.json.description }}",
+            "urgency": "={{ $('Request With Approver').item.json.urgency }}",
+            "approverEmail": "={{ $('Request With Approver').item.json.approverEmail }}",
+            "queue": "={{ $('Request With Approver').item.json.queue }}",
+            "status": "Pending",
+            "submittedAt": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fullName",
+              "displayName": "fullName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "workEmail",
+              "displayName": "workEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "requestType",
+              "displayName": "requestType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "urgency",
+              "displayName": "urgency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "approverEmail",
+              "displayName": "approverEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "queue",
+              "displayName": "queue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "submittedAt",
+              "displayName": "submittedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "decision",
+              "displayName": "decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "decidedAt",
+              "displayName": "decidedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b2bcaaf2-f6a0-413d-89dc-62d79cbc772f",
+      "name": "Log Request",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "={{ $('Request With Approver').item.json.approverEmail }}",
+        "subject": "=New {{ $('Request With Approver').item.json.requestType }} request from {{ $('Request With Approver').item.json.fullName }}",
+        "message": "=A new {{ $('Request With Approver').item.json.requestType }} request needs your review.\n\nRequested by: {{ $('Request With Approver').item.json.fullName }} ({{ $('Request With Approver').item.json.workEmail }})\nUrgency: {{ $('Request With Approver').item.json.urgency }}\nDetails: {{ $('Request With Approver').item.json.description }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "resumeAmount": 2,
+              "resumeUnit": "days"
+            }
+          },
+          "appendAttribution": false
+        }
+      },
+      "id": "4aeb1555-ef7b-4b6c-821c-fa916978ef8c",
+      "name": "Request Approval",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        288
+      ],
+      "webhookId": "29434cd0-463f-4c91-8613-2315cd8a7249"
+    },
+    {
+      "id": "52225d89-bba1-44db-a620-f36819d718f1",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        860,
+        -620
+      ],
+      "parameters": {
+        "content": "## Part 2 of 3: Log the request and send it for approval\n**Employee Request and Approval Router**\n\n1. Log Request: saves every request into a Data Table with its status set to Pending. The `employee_requests` Data Table is created for you automatically when n8n starts, so there is nothing to upload.\n\n2. Request Approval: emails the approver the full request, with Approve and Decline buttons built right into the email itself. The workflow then pauses and waits for the approver to click one of the two buttons.\n\n### Setting up Gmail for this node (only needs to be done once)\nSince n8n is running on your own computer (localhost), you need to tell Google it is safe to send a response back to it. Here are the steps:\n\n1. Go to the Google Cloud Console and create a new project.\n2. Inside that project, set up the OAuth consent screen and add your own email as a test user.\n3. Create a new OAuth Client ID, and choose Web Application as the type.\n4. Open the Gmail credential screen inside n8n, copy the callback URL shown there, and paste it in as the Authorized redirect URI in Google Cloud Console.\n5. Once created, Google will give you a Client ID and a Client Secret.\n6. Copy both of these into the Gmail credential inside n8n.\n7. Make sure the Gmail API is turned on for the project, and give it permission to send and read emails.\n8. Save the credential. You should see it connect successfully, and you are good to go.\n\nImport part 3 next and connect Request Approval into Is Approved?.",
+        "width": 680,
+        "height": 640
+      }
+    }
+  ],
+  "connections": {
+    "Log Request": {
+      "main": [
+        [
+          {
+            "node": "Request Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request With Approver": {
+      "main": [
+        [
+          {
+            "node": "Log Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {}
+}

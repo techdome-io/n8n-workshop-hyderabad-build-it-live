@@ -1,0 +1,293 @@
+{
+  "name": "AI Lead Intelligence - Part 3: Log and Notify",
+  "nodes": [
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "leads"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fullName": "={{ $('Normalize Lead').item.json.fullName }}",
+            "workEmail": "={{ $('Normalize Lead').item.json.workEmail }}",
+            "company": "={{ $('Normalize Lead').item.json.company }}",
+            "role": "={{ $('Normalize Lead').item.json.role }}",
+            "message": "={{ $('Normalize Lead').item.json.message }}",
+            "domain": "={{ $('Normalize Lead').item.json.domain }}",
+            "fitScore": "={{ $('Score Lead with AI').item.json.output.fit_score }}",
+            "urgency": "={{ $('Score Lead with AI').item.json.output.urgency }}",
+            "budgetSignal": "={{ $('Score Lead with AI').item.json.output.budget_signal }}",
+            "likelyUseCase": "={{ $('Score Lead with AI').item.json.output.likely_use_case }}",
+            "summary": "={{ $('Score Lead with AI').item.json.output.one_line_summary }}",
+            "suggestedOpener": "={{ $('Score Lead with AI').item.json.output.suggested_opener }}",
+            "submittedAt": "={{ $('Normalize Lead').item.json.submittedAt }}",
+            "status": "={{ $('Score Lead with AI').item.json.output.fit_score >= 7 || $('Score Lead with AI').item.json.output.urgency === 'high' ? 'Hot' : 'Standard' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fullName",
+              "displayName": "fullName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "workEmail",
+              "displayName": "workEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "domain",
+              "displayName": "domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "fitScore",
+              "displayName": "fitScore",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false
+            },
+            {
+              "id": "urgency",
+              "displayName": "urgency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "budgetSignal",
+              "displayName": "budgetSignal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "likelyUseCase",
+              "displayName": "likelyUseCase",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "suggestedOpener",
+              "displayName": "suggestedOpener",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "submittedAt",
+              "displayName": "submittedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6de02b22-f083-4d92-83a5-5dfc413e00a1",
+      "name": "Log Lead",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        992,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Score Lead with AI').item.json.output.fit_score }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              },
+              "rightValue": 7,
+              "id": "da9e3bd9-216a-457e-8787-199fdb9440bc"
+            },
+            {
+              "leftValue": "={{ $('Score Lead with AI').item.json.output.urgency }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "high",
+              "id": "69887f0f-04fe-4a23-96e5-4771dae7ca70"
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "dcc1aa3b-af15-48a5-b757-8900b66074b1",
+      "name": "Is Hot Lead?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1216,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "text": "=:fire: *Hot lead* from {{ $('Normalize Lead').item.json.company }}\n*{{ $('Normalize Lead').item.json.fullName }}* ({{ $('Normalize Lead').item.json.role }}) - {{ $('Normalize Lead').item.json.workEmail }}\nFit score: {{ $('Score Lead with AI').item.json.output.fit_score }}/10 | Urgency: {{ $('Score Lead with AI').item.json.output.urgency }}\nSummary: {{ $('Score Lead with AI').item.json.output.one_line_summary }}\nSuggested opener: {{ $('Score Lead with AI').item.json.output.suggested_opener }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "id": "e50a95f9-6b2c-440a-90bf-ad84cc3fb528",
+      "name": "Notify Sales - Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        1488,
+        112
+      ],
+      "webhookId": "3a1af919-5dd7-4e26-9c8a-ddb014cddcfd",
+      "disabled": true
+    },
+    {
+      "id": "6316a039-bb6f-4d86-8433-241b7c92cf16",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -280
+      ],
+      "parameters": {
+        "content": "## Part 3 of 3: Log the lead and alert sales\n**AI Lead Intelligence and Qualification**\n\n1. Log Lead: saves every lead into a Data Table. The `leads` Data Table is created for you automatically when n8n starts, so there is nothing to upload.\n2. Is Hot Lead?: checks the score. A high fit score or high urgency marks the lead as hot.\n3. Notify Sales - Slack: sends an alert for hot leads. This is just an example messenger. You can swap this node for WhatsApp, Microsoft Teams, or any messaging app your team already uses.\n\nImport this after part 2 and connect Score Lead with AI into Log Lead.\n\n**Workshop default: this node is DISABLED** (it needs your own Slack app and channel). Enable it after adding your own credential and channel.",
+        "width": 820,
+        "height": 280
+      }
+    }
+  ],
+  "connections": {
+    "Log Lead": {
+      "main": [
+        [
+          {
+            "node": "Is Hot Lead?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Hot Lead?": {
+      "main": [
+        [
+          {
+            "node": "Notify Sales - Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score Lead with AI": {
+      "main": [
+        [
+          {
+            "node": "Log Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {}
+}

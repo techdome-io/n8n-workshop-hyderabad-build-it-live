@@ -1,0 +1,141 @@
+{
+  "name": "AI Lead Intelligence - Part 1: Capture and Enrich",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Tell us about your project",
+        "formDescription": "Share a few details and our team will follow up shortly.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "fieldName": "fullName",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Work Email",
+              "fieldType": "email",
+              "fieldName": "workEmail",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company",
+              "fieldName": "company",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Role",
+              "fieldName": "role"
+            },
+            {
+              "fieldLabel": "What are you looking to solve?",
+              "fieldType": "textarea",
+              "fieldName": "message",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "dd2a4430-55ed-4c37-9f93-e9a08e6eaaa3",
+      "name": "Lead Capture Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        112
+      ],
+      "webhookId": "28ea7b9f-6b9b-468f-8771-b6b55ec6c086"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "domain",
+              "name": "domain",
+              "value": "={{ $json.workEmail.split(\"@\")[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "submittedAt",
+              "name": "submittedAt",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "9ff25e03-7c44-4f96-9f1a-ea92415c1117",
+      "name": "Normalize Lead",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "organization",
+        "domain": "={{ $json.domain }}"
+      },
+      "id": "a6c74365-6660-41c5-9742-c9f85f3219b1",
+      "name": "Enrich Company - Apollo",
+      "type": "@apolloio/n8n-nodes-apollo.apollo",
+      "typeVersion": 1,
+      "position": [
+        448,
+        112
+      ],
+      "disabled": true
+    },
+    {
+      "id": "f1f77ce9-b048-4612-a762-adf6408369f2",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        -300
+      ],
+      "parameters": {
+        "content": "## Part 1 of 3: Capture the lead and enrich it\n**AI Lead Intelligence and Qualification**\n\n1. Lead Capture Form: a public form. Whoever fills it in gives their name, work email, company, role, and what they want to solve. This is what starts the workflow.\n2. Normalize Lead: pulls the domain out of the work email and notes the exact time the form was submitted.\n3. Enrich Company - Apollo: looks up that domain in Apollo to pull real details about the company, like its industry and size.\n\nAdd your own Apollo credential on the Enrich Company node. Everything else is ready to use.\n\nNext: import part 2 and connect it after Enrich Company - Apollo.\n\n**Workshop default: this node is DISABLED** (it needs your own Apollo API key). Enable it only if you have one.",
+        "width": 760,
+        "height": 300
+      }
+    }
+  ],
+  "connections": {
+    "Lead Capture Form": {
+      "main": [
+        [
+          {
+            "node": "Normalize Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Lead": {
+      "main": [
+        [
+          {
+            "node": "Enrich Company - Apollo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {}
+}
