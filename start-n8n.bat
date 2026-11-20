@@ -10,7 +10,7 @@ docker info >nul 2>&1
 if %errorlevel%==0 (
   echo Starting n8n %N8N_VERSION% with Docker... close this window or press Ctrl+C to stop. Your data is kept.
   start "" /b cmd /c "ping -n 13 127.0.0.1 >nul & start %URL%"
-  docker run -it --rm --name n8n -p 5678:5678 -e GENERIC_TIMEZONE=Asia/Kolkata -e TZ=Asia/Kolkata -v %N8N_VOLUME%:/home/node/.n8n -v "%cd%\setup:/setup:ro" -v "%cd%\workflows:/workflows:ro" --entrypoint sh docker.n8n.io/n8nio/n8n:%N8N_VERSION% -c "if [ -f /setup/first-run.sh ]; then sh /setup/first-run.sh; else echo Setup folder not shared with Docker - starting n8n without first-run setup.; exec n8n start; fi"
+  docker run -it --rm --name n8n -p 5678:5678 -e GENERIC_TIMEZONE=Asia/Kolkata -e TZ=Asia/Kolkata -v %N8N_VOLUME%:/home/node/.n8n -v "%cd%\setup:/setup:ro" -v "%cd%\event-workflows:/event-workflows:ro" --entrypoint sh docker.n8n.io/n8nio/n8n:%N8N_VERSION% -c "if [ -f /setup/first-run.sh ]; then sh /setup/first-run.sh; else echo Setup folder not shared with Docker - starting n8n without first-run setup.; exec n8n start; fi"
   goto :end
 )
 
@@ -22,12 +22,12 @@ if %errorlevel%==0 (
     echo First run: preparing the workshop - data tables and starter workflows...
     call npx --yes n8n@%N8N_VERSION% import:workflow --input=setup/setup-data-tables.json
     if not errorlevel 1 call npx --yes n8n@%N8N_VERSION% publish:workflow --id=setupDataTables01
-    if not errorlevel 1 call npx --yes n8n@%N8N_VERSION% import:workflow --separate --input=workflows/start/
+    if not errorlevel 1 for /d %%d in ("event-workflows\*") do for %%f in ("%%d\1_*.json") do call npx --yes n8n@%N8N_VERSION% import:workflow --input="%%f"
     if not errorlevel 1 (
       mkdir "%USERPROFILE%\.n8n" 2>nul
       type nul > "%USERPROFILE%\.n8n\.workshop_setup_done"
     ) else (
-      echo WARNING: workshop preparation failed. Import the files in setup and workflows by hand.
+      echo WARNING: workshop preparation failed. Import the files in setup and event-workflows by hand.
     )
   )
   call npx --yes n8n@%N8N_VERSION%

@@ -35,7 +35,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "workEmail",
@@ -44,7 +45,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "company",
@@ -53,7 +55,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "role",
@@ -62,7 +65,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "message",
@@ -71,7 +75,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "domain",
@@ -80,7 +85,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "fitScore",
@@ -89,7 +95,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "number",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "urgency",
@@ -98,7 +105,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "budgetSignal",
@@ -107,7 +115,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "likelyUseCase",
@@ -116,7 +125,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "summary",
@@ -125,7 +135,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "suggestedOpener",
@@ -134,7 +145,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "submittedAt",
@@ -143,7 +155,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             },
             {
               "id": "status",
@@ -152,7 +165,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "readOnly": false
+              "readOnly": false,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -212,42 +226,29 @@
       ]
     },
     {
-      "parameters": {
-        "select": "channel",
-        "channelId": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
-        },
-        "text": "=:fire: *Hot lead* from {{ $('Normalize Lead').item.json.company }}\n*{{ $('Normalize Lead').item.json.fullName }}* ({{ $('Normalize Lead').item.json.role }}) - {{ $('Normalize Lead').item.json.workEmail }}\nFit score: {{ $('Score Lead with AI').item.json.output.fit_score }}/10 | Urgency: {{ $('Score Lead with AI').item.json.output.urgency }}\nSummary: {{ $('Score Lead with AI').item.json.output.one_line_summary }}\nSuggested opener: {{ $('Score Lead with AI').item.json.output.suggested_opener }}",
-        "otherOptions": {
-          "includeLinkToWorkflow": false
-        }
-      },
-      "id": "e50a95f9-6b2c-440a-90bf-ad84cc3fb528",
-      "name": "Notify Sales - Slack",
-      "type": "n8n-nodes-base.slack",
-      "typeVersion": 2.5,
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
       "position": [
         1488,
-        112
+        96
       ],
-      "webhookId": "3a1af919-5dd7-4e26-9c8a-ddb014cddcfd",
-      "disabled": true
+      "id": "8d92b191-7c71-4a16-b68d-2ac268724eed",
+      "name": "Connect your messenger application to notify sales team"
     },
     {
-      "id": "6316a039-bb6f-4d86-8433-241b7c92cf16",
+      "id": "dbdfc837-ce06-4e6f-be1f-1ef8f391f8b3",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
         960,
-        -280
+        -300
       ],
       "parameters": {
-        "content": "## Part 3 of 3: Log the lead and alert sales\n**AI Lead Intelligence and Qualification**\n\n1. Log Lead: saves every lead into a Data Table. The `leads` Data Table is created for you automatically when n8n starts, so there is nothing to upload.\n2. Is Hot Lead?: checks the score. A high fit score or high urgency marks the lead as hot.\n3. Notify Sales - Slack: sends an alert for hot leads. This is just an example messenger. You can swap this node for WhatsApp, Microsoft Teams, or any messaging app your team already uses.\n\nImport this after part 2 and connect Score Lead with AI into Log Lead.\n\n**Workshop default: this node is DISABLED** (it needs your own Slack app and channel). Enable it after adding your own credential and channel.",
+        "content": "## Part 3 of 3: Log the lead and alert sales\n**AI Lead Intelligence and Qualification**\n\n1. Log Lead: saves every lead into a Data Table. The `leads` Data Table is created for you automatically when n8n starts, so there is nothing to upload.\n2. Is Hot Lead?: checks the score. A high fit score or high urgency marks the lead as hot.\n3. Connect your messenger application to notify sales team: a placeholder. The original build sent a Slack alert here for hot leads, but Slack needs its own login, which will not be possible for everyone live, so it has been left as a do nothing node. Swap in Slack, WhatsApp, Microsoft Teams, or whatever messaging app your team already uses.\n\nImport this after part 2 and connect Score Lead with AI into Log Lead.",
         "width": 820,
-        "height": 280
+        "height": 300
       }
     }
   ],
@@ -267,7 +268,7 @@
       "main": [
         [
           {
-            "node": "Notify Sales - Slack",
+            "node": "Connect your messenger application to notify sales team",
             "type": "main",
             "index": 0
           }
@@ -286,8 +287,11 @@
       ]
     }
   },
+  "pinData": {},
   "settings": {
     "executionOrder": "v1"
   },
-  "meta": {}
+  "meta": {
+    "instanceId": "n8n-workshop-import"
+  }
 }

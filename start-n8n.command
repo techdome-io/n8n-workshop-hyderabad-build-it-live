@@ -18,7 +18,7 @@ if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
     -e GENERIC_TIMEZONE=Asia/Kolkata -e TZ=Asia/Kolkata \
     -v "$VOL":/home/node/.n8n \
     -v "$PWD/setup:/setup:ro" \
-    -v "$PWD/workflows:/workflows:ro" \
+    -v "$PWD/event-workflows:/event-workflows:ro" \
     --entrypoint sh "docker.n8n.io/n8nio/n8n:$V" -c 'if [ -f /setup/first-run.sh ]; then sh /setup/first-run.sh; else echo "Setup folder not shared with Docker - starting n8n without first-run setup."; exec n8n start; fi'
 elif command -v npx >/dev/null 2>&1; then
   echo "Docker not found. Starting n8n $V with Node.js... (press Ctrl+C to stop)"
@@ -26,12 +26,17 @@ elif command -v npx >/dev/null 2>&1; then
   M="$HOME/.n8n/.workshop_setup_done"
   if [ ! -f "$M" ]; then
     echo "First run: preparing the workshop (data tables + starter workflows)..."
-    if npx --yes "n8n@$V" import:workflow --input=setup/setup-data-tables.json \
-       && npx --yes "n8n@$V" publish:workflow --id=setupDataTables01 \
-       && { ls workflows/start/*.json >/dev/null 2>&1 && npx --yes "n8n@$V" import:workflow --separate --input=workflows/start/ || true; }; then
+    ok=1
+    npx --yes "n8n@$V" import:workflow --input=setup/setup-data-tables.json \
+      && npx --yes "n8n@$V" publish:workflow --id=setupDataTables01 || ok=0
+    for f in event-workflows/*/1_*.json; do
+      [ -f "$f" ] || continue
+      npx --yes "n8n@$V" import:workflow --input="$f" || ok=0
+    done
+    if [ "$ok" = 1 ]; then
       mkdir -p "$HOME/.n8n" && touch "$M"
     else
-      echo "WARNING: workshop preparation failed; import the files in setup/ and workflows/ by hand."
+      echo "WARNING: workshop preparation failed; import the files in setup/ and event-workflows/ by hand."
     fi
   fi
   npx --yes "n8n@$V"

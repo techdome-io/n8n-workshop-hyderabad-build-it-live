@@ -72,33 +72,34 @@ npx n8n
 
 Then open http://localhost:5678 and create your owner account.
 
-> The manual route does **not** run the first-run setup. Create the tables yourself: Data Tables → create from CSV → upload `data/leads.csv` and `data/employee_requests.csv` (name them `leads` and `employee_requests`), and import the files in `workflows/start/` by hand. To get the automatic setup with Docker Compose, use `docker compose up -d` instead (it runs the same first-run script).
+> The manual route does **not** run the first-run setup. Create the tables yourself: Data Tables → create from CSV → upload `data/leads.csv` and `data/employee_requests.csv` (name them `leads` and `employee_requests`), and import the Part 1 files in `event-workflows/` by hand. To get the automatic setup with Docker Compose, use `docker compose up -d` instead (it runs the same first-run script).
 
 Per-OS details: [Linux](install/linux.md) · [macOS](install/macos.md) · [Windows](install/windows.md)
 
 ## 4. Build the workflows live
 
-Two workflows, each built in 3 parts:
+Two workflows live in `event-workflows/`, each built in 3 parts. **Part 1 of each is already imported** for you on the first start. Add Parts 2 and 3 as the workshop goes:
 
-| Workflow | Part 1 (already imported) | Part 2 | Part 3 |
-|---|---|---|---|
-| **AI Lead Intelligence** | `workflows/start/1_lead_intelligence_...` | `workflows/next/lead-intelligence/2_...` | `workflows/next/lead-intelligence/3_...` |
-| **Employee Request Router** | `workflows/start/1_employee_router_...` | `workflows/next/employee-router/2_...` | `workflows/next/employee-router/3_...` |
+1. Open the JSON file for the next part (see [event-workflows/README.md](event-workflows/README.md)).
+2. Copy everything (Ctrl+A, Ctrl+C).
+3. Click the canvas of your workflow and paste (Ctrl+V).
+4. Connect the new nodes as the sticky note on that part says.
 
-For each next part: open the JSON file, copy everything (Ctrl+A, Ctrl+C), click the canvas of your workflow and paste (Ctrl+V). Then connect the new nodes as the sticky note on that part says. (Parts 2 and 3 point at nodes from earlier parts, so they can't be imported as separate workflows.)
+(Parts 2 and 3 point at nodes from earlier parts, so they can't be imported as separate workflows.)
 
 The Data Tables `leads` and `employee_requests` already exist (created automatically on first start).
 
 ## 5. Add credentials and run
 
-Workflow JSONs contain no credentials. Open each node that shows a red warning and add your own:
+Workflow files contain no keys. Open each node that shows a red warning and connect your own account:
 
 | Node | What you need |
 |---|---|
-| **OpenAI Model** | Create an OpenAI credential with the **API key** and **Base URL** given at the workshop. Model: `gpt-5-mini`. |
-| **Enrich Company - Apollo** | Disabled by default. Enable only if you have your own Apollo API key. |
-| **Notify Sales - Slack** | Disabled by default. Enable after adding your own Slack credential and channel. |
-| **Gmail nodes** (Employee Router) | Your own Gmail OAuth credential (see the sticky note in Part 2). Put your own email in the four queue nodes of Part 1. |
+| **Run an Actor and get dataset** (Lead Intelligence, Part 1) | Your own free **Apify** account and API token |
+| **OpenAI Model** (Lead Intelligence, Part 2) | An OpenAI credential with the **API key** and **Base URL** given at the workshop. Model: `gpt-5-mini`. |
+| **IT / Equipment / Admin / Ops queue nodes** (Employee Router, Part 1) | Put your own email as the approver |
+
+The Slack and Gmail steps are placeholders in this build, so no other accounts are needed.
 
 Then click **Execute workflow** to test, and toggle **Active** to run it automatically.
 
@@ -110,9 +111,7 @@ Then click **Execute workflow** to test, and toggle **Active** to run it automat
 ├── setup/
 │   ├── first-run.sh                 # runs on first start
 │   └── setup-data-tables.json       # creates the leads + employee_requests tables
-├── workflows/
-│   ├── start/                       # Part 1 of each workflow (auto-imported)
-│   └── next/                        # Parts 2 and 3 (paste in during the workshop)
+├── event-workflows/                 # the two workflows, Part 1/2/3 each (Part 1 auto-imported)
 ├── data/                            # the two CSV templates (manual fallback)
 ├── install/                         # per-OS guides
 └── docker-compose.yml               # optional

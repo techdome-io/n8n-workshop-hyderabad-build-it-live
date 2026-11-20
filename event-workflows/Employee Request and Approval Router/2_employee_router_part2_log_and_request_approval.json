@@ -1,5 +1,5 @@
 {
-  "name": "Employee Request Router - Part 2: Log and Request Approval",
+  "name": "Employee Request Router - Part 2: Log and Approval (Demo)",
   "nodes": [
     {
       "parameters": {
@@ -140,49 +140,56 @@
       ]
     },
     {
-      "parameters": {
-        "operation": "sendAndWait",
-        "sendTo": "={{ $('Request With Approver').item.json.approverEmail }}",
-        "subject": "=New {{ $('Request With Approver').item.json.requestType }} request from {{ $('Request With Approver').item.json.fullName }}",
-        "message": "=A new {{ $('Request With Approver').item.json.requestType }} request needs your review.\n\nRequested by: {{ $('Request With Approver').item.json.fullName }} ({{ $('Request With Approver').item.json.workEmail }})\nUrgency: {{ $('Request With Approver').item.json.urgency }}\nDetails: {{ $('Request With Approver').item.json.description }}",
-        "approvalOptions": {
-          "values": {
-            "approvalType": "double"
-          }
-        },
-        "options": {
-          "limitWaitTime": {
-            "values": {
-              "resumeAmount": 2,
-              "resumeUnit": "days"
-            }
-          },
-          "appendAttribution": false
-        }
-      },
-      "id": "4aeb1555-ef7b-4b6c-821c-fa916978ef8c",
-      "name": "Request Approval",
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.2,
+      "id": "7377bffe-decd-4cf7-b219-f751923f6119",
+      "name": "Simulated Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
       "position": [
         1120,
         288
       ],
-      "webhookId": "29434cd0-463f-4c91-8613-2315cd8a7249"
+      "parameters": {
+        "amount": 8,
+        "unit": "seconds"
+      }
     },
     {
-      "id": "52225d89-bba1-44db-a620-f36819d718f1",
+      "id": "276b774a-1aa7-4b2f-bd65-c93ddc2a9c62",
+      "name": "Auto-Approve (Demo)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1300,
+        288
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "approved-field",
+              "name": "data.approved",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      }
+    },
+    {
+      "id": "02b2a97d-0658-43fd-8246-818cda471797",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
         860,
-        -620
+        -560
       ],
       "parameters": {
-        "content": "## Part 2 of 3: Log the request and send it for approval\n**Employee Request and Approval Router**\n\n1. Log Request: saves every request into a Data Table with its status set to Pending. The `employee_requests` Data Table is created for you automatically when n8n starts, so there is nothing to upload.\n\n2. Request Approval: emails the approver the full request, with Approve and Decline buttons built right into the email itself. The workflow then pauses and waits for the approver to click one of the two buttons.\n\n### Setting up Gmail for this node (only needs to be done once)\nSince n8n is running on your own computer (localhost), you need to tell Google it is safe to send a response back to it. Here are the steps:\n\n1. Go to the Google Cloud Console and create a new project.\n2. Inside that project, set up the OAuth consent screen and add your own email as a test user.\n3. Create a new OAuth Client ID, and choose Web Application as the type.\n4. Open the Gmail credential screen inside n8n, copy the callback URL shown there, and paste it in as the Authorized redirect URI in Google Cloud Console.\n5. Once created, Google will give you a Client ID and a Client Secret.\n6. Copy both of these into the Gmail credential inside n8n.\n7. Make sure the Gmail API is turned on for the project, and give it permission to send and read emails.\n8. Save the credential. You should see it connect successfully, and you are good to go.\n\nImport part 3 next and connect Request Approval into Is Approved?.",
+        "content": "## Part 2 of 3: Log the request and stand in for approval\n**Employee Request and Approval Router**\n\n1. Log Request: saves every request into a Data Table with its status set to Pending. The `employee_requests` Data Table is created for you automatically when n8n starts, so there is nothing to upload.\n\n2. Simulated Wait: pauses for a few seconds. In a real build, this is where an email goes out to the approver and the workflow waits for their click, which needs a working email credential.\n\n3. Auto-Approve (Demo): automatically marks the request approved after the wait, in the exact shape the real approval step would have produced, so the rest of the workflow runs exactly the same either way.\n\nWhy it is built this way: connecting a real inbox live, for everyone in the room, would eat the whole session on one login screen. This way you still build and run the full shape of the workflow today. Swapping in a real Gmail, Outlook, or Slack 'Send and Wait' node here later takes only a few minutes, and nothing downstream needs to change.\n\nImport part 3 next and connect Auto-Approve (Demo) into Is Approved?.",
         "width": 680,
-        "height": 640
+        "height": 560
       }
     }
   ],
@@ -191,7 +198,18 @@
       "main": [
         [
           {
-            "node": "Request Approval",
+            "node": "Simulated Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simulated Wait": {
+      "main": [
+        [
+          {
+            "node": "Auto-Approve (Demo)",
             "type": "main",
             "index": 0
           }
@@ -210,8 +228,11 @@
       ]
     }
   },
+  "pinData": {},
   "settings": {
     "executionOrder": "v1"
   },
-  "meta": {}
+  "meta": {
+    "instanceId": "n8n-workshop-import"
+  }
 }

@@ -36,7 +36,13 @@
       "position": [
         608,
         336
-      ]
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "gd7EPqC4LH7VYZ5A",
+          "name": "OpenAI account"
+        }
+      }
     },
     {
       "parameters": {
@@ -52,7 +58,7 @@
       ]
     },
     {
-      "id": "88616b52-c90e-4357-a03b-04fd560d9839",
+      "id": "5bac89a5-75ca-43fb-b2a4-32127b6c7478",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -61,7 +67,7 @@
         600
       ],
       "parameters": {
-        "content": "## Part 2 of 3: Score the lead with AI\n**AI Lead Intelligence and Qualification**\n\nThis is the part that reads the lead and decides how good a fit they are.\n\n1. Score Lead with AI: sends the lead's details to an AI model and asks it to return a fit score, how urgent the lead sounds, and a suggested reply.\n2. OpenAI Model: the model doing the thinking. Add your own OpenAI credential here and leave the rest as it is.\n3. Lead Score Schema: tells the AI exactly which fields to send back, so the answer always comes back clean and usable.\n\nA short note on the prompt: it describes what our company actually sells and what a good fit looks like, so the AI scores leads against real services instead of just how excited the message sounds. You do not need to change the prompt, it is ready to use once the credential is added.\n\nImport this after part 1 and connect Enrich Company - Apollo into Score Lead with AI.",
+        "content": "## Part 2 of 3: Score the lead with AI\n**AI Lead Intelligence and Qualification**\n\nThis is the part that reads the lead and decides how good a fit they are.\n\n1. Score Lead with AI: sends the lead's details to an AI model and asks it to return a fit score, how urgent the lead sounds, and a suggested reply.\n2. OpenAI Model: the model doing the thinking. Add your own OpenAI credential here and leave the rest as it is.\n3. Lead Score Schema: tells the AI exactly which fields to send back, so the answer always comes back clean and usable.\n\nA short note on the prompt: it describes what our company actually sells and what a good fit looks like, so the AI scores leads against real services instead of just how excited the message sounds. You do not need to change the prompt, it is ready to use once the credential is added.\n\nImport this after part 1 and connect Run an Actor and get dataset into Score Lead with AI.",
         "width": 620,
         "height": 440
       }
@@ -90,7 +96,7 @@
         ]
       ]
     },
-    "Enrich Company - Apollo": {
+    "Run an Actor and get dataset": {
       "main": [
         [
           {
@@ -102,8 +108,11 @@
       ]
     }
   },
+  "pinData": {},
   "settings": {
     "executionOrder": "v1"
   },
-  "meta": {}
+  "meta": {
+    "instanceId": "n8n-workshop-import"
+  }
 }

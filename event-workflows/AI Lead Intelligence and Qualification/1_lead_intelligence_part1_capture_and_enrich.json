@@ -81,32 +81,44 @@
     },
     {
       "parameters": {
-        "resource": "organization",
-        "domain": "={{ $json.domain }}"
+        "operation": "Run actor and get dataset",
+        "actorId": {
+          "__rl": true,
+          "value": "https://console.apify.com/actors/EHDSVWWQ1RmGr7j7k/input",
+          "mode": "url"
+        },
+        "customBody": "={\n    \"queries\": \"Tell me all about the company {{ $json.company }} and its domain is {{ $json.domain }}\"\n} ",
+        "timeout": {},
+        "maxTotalChargeUsd": {}
       },
-      "id": "a6c74365-6660-41c5-9742-c9f85f3219b1",
-      "name": "Enrich Company - Apollo",
-      "type": "@apolloio/n8n-nodes-apollo.apollo",
-      "typeVersion": 1,
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 2,
       "position": [
-        448,
+        464,
         112
       ],
-      "disabled": true
+      "id": "82cd0414-cc0a-41a7-8625-172593d0d48d",
+      "name": "Run an Actor and get dataset",
+      "credentials": {
+        "apifyApi": {
+          "id": "JlBfqPVD69CCA712",
+          "name": "Rahul's Apify account"
+        }
+      }
     },
     {
-      "id": "f1f77ce9-b048-4612-a762-adf6408369f2",
+      "id": "670310e9-5ecf-4422-9e73-1cb98021f861",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
         -20,
-        -300
+        -340
       ],
       "parameters": {
-        "content": "## Part 1 of 3: Capture the lead and enrich it\n**AI Lead Intelligence and Qualification**\n\n1. Lead Capture Form: a public form. Whoever fills it in gives their name, work email, company, role, and what they want to solve. This is what starts the workflow.\n2. Normalize Lead: pulls the domain out of the work email and notes the exact time the form was submitted.\n3. Enrich Company - Apollo: looks up that domain in Apollo to pull real details about the company, like its industry and size.\n\nAdd your own Apollo credential on the Enrich Company node. Everything else is ready to use.\n\nNext: import part 2 and connect it after Enrich Company - Apollo.\n\n**Workshop default: this node is DISABLED** (it needs your own Apollo API key). Enable it only if you have one.",
+        "content": "## Part 1 of 3: Capture the lead and enrich it\n**AI Lead Intelligence and Qualification**\n\n1. Lead Capture Form: a public form. Whoever fills it in gives their name, work email, company, role, and what they want to solve. This is what starts the workflow.\n2. Normalize Lead: pulls the domain out of the work email and notes the exact time the form was submitted.\n3. Run an Actor and get dataset: runs an Apify actor, the Google AI Overviews Scraper, that asks Google's AI Overview to summarize the company using its name and domain. This replaced Apollo, same idea, a quick read on who the company is, just through Apify instead.\n\nAbout the credential: this node already shows a credential called 'Rahul's Apify account'. That is only a label though, n8n never puts the actual key inside a shared file, so you will still need to connect your own Apify account here. A free Apify account works fine for this.\n\nNext: import part 2 and connect Run an Actor and get dataset into Score Lead with AI.",
         "width": 760,
-        "height": 300
+        "height": 380
       }
     }
   ],
@@ -126,7 +138,7 @@
       "main": [
         [
           {
-            "node": "Enrich Company - Apollo",
+            "node": "Run an Actor and get dataset",
             "type": "main",
             "index": 0
           }
@@ -134,8 +146,11 @@
       ]
     }
   },
+  "pinData": {},
   "settings": {
     "executionOrder": "v1"
   },
-  "meta": {}
+  "meta": {
+    "instanceId": "n8n-workshop-import"
+  }
 }

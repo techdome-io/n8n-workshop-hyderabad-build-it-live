@@ -11,6 +11,6 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
       - ./setup:/setup:ro
-      - ./workflows:/workflows:ro
+      - ./event-workflows:/event-workflows:ro
 volumes:
   n8n_data:
