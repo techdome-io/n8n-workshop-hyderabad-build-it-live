@@ -16,7 +16,7 @@ Also needed:
 - **4 GB RAM** free, 2 GB disk.
 - **Port 5678 free.** Close anything else using it.
 - A modern browser (Chrome, Edge, Firefox, Safari).
-- Some workflows need your own accounts or API keys (listed in [workflows/README.md](workflows/README.md)).
+- Some workflows need your own accounts or API keys (listed in [event-workflows/README.md](event-workflows/README.md)).
 
 Check your setup in a terminal (PowerShell on Windows):
 ```bash
@@ -44,7 +44,12 @@ What it does: starts n8n **2.48.7** using Docker (or Node.js if Docker isn't ins
 - creates the two Data Tables for you (`leads` and `employee_requests`), so there is no CSV to upload
 - imports the two starter workflows (Part 1 of each)
 
-Close the window or press Ctrl+C to stop. Your data is kept.
+After you create your owner account you will see these in your **Workflows** list:
+- `AI Lead Intelligence - Part 1: Capture and Enrich`
+- `Employee Request Router - Part 1: Capture and Route`
+- `Setup - create data tables (runs automatically)`: leave this one alone, it just keeps the two tables in place
+
+This setup runs only once. Close the window or press Ctrl+C to stop; your data is kept.
 
 ### Method 2: Manual
 
@@ -55,7 +60,7 @@ Open a terminal in the unzipped folder (PowerShell on Windows).
 docker run -it --rm --name n8n -p 5678:5678 \
   -e GENERIC_TIMEZONE=Asia/Kolkata -e TZ=Asia/Kolkata \
   -v n8n_data:/home/node/.n8n \
-  docker.n8n.io/n8nio/n8n
+  docker.n8n.io/n8nio/n8n:2.48.7
 ```
 (On Windows PowerShell, put it on one line without the `\`.)
 
@@ -67,7 +72,7 @@ docker compose down       # stop (data is kept)
 
 **With Node.js:**
 ```bash
-npx n8n
+npx n8n@2.48.7
 ```
 
 Then open http://localhost:5678 and create your owner account.
@@ -91,15 +96,24 @@ The Data Tables `leads` and `employee_requests` already exist (created automatic
 
 ## 5. Add credentials and run
 
-Workflow files contain no keys. Open each node that shows a red warning and connect your own account:
+Workflow files contain no keys. Some nodes show a pre-filled credential **name** (for example `OpenAI account` or `Rahul's Apify account`). That is only a label from the original build and it does not exist on your machine, so open the node and **choose or create your own**.
 
 | Node | What you need |
 |---|---|
 | **Run an Actor and get dataset** (Lead Intelligence, Part 1) | Your own free **Apify** account and API token |
-| **OpenAI Model** (Lead Intelligence, Part 2) | An OpenAI credential with the **API key** and **Base URL** given at the workshop. Model: `gpt-5-mini`. |
+| **OpenAI Model** (Lead Intelligence, Part 2) | The workshop OpenAI credential, set up as below |
 | **IT / Equipment / Admin / Ops queue nodes** (Employee Router, Part 1) | Put your own email as the approver |
 
 The Slack and Gmail steps are placeholders in this build, so no other accounts are needed.
+
+### OpenAI credential (workshop key)
+
+1. Open the **OpenAI Model** node → **Credential** → **Create new credential**.
+2. **API Key:** the key shown at the workshop.
+3. **Base URL:** the URL shown at the workshop. **Do not leave it blank**, or n8n will send the key to OpenAI instead of the workshop gateway.
+4. Save, and keep the model as `gpt-5-mini`.
+
+The workshop key is shared, temporary and rate-limited (a small number of requests per network), and it stops working after the event. Don't use it for anything else.
 
 Then click **Execute workflow** to test, and toggle **Active** to run it automatically.
 
@@ -131,7 +145,8 @@ Then click **Execute workflow** to test, and toggle **Active** to run it automat
 | Window says "Setup folder not shared with Docker" | Docker can't read the folder. Move the unzipped folder somewhere simple (e.g. your home folder, not Downloads/Desktop/OneDrive), allow Docker file access if macOS or Windows asks, and run again. Or create the tables by hand from `data/*.csv` |
 | Starter workflows or data tables missing | The first-run setup runs only once. See "Start over" below |
 | Webhook URLs don't work from outside | Use `npx n8n start --tunnel` for testing only |
-| Credential warning on a node | Add your own credential, none are shipped in the JSON |
+| Credential warning on a node | Choose or create your own credential. The workflow files only carry a label, never a key |
+| OpenAI step fails with 429 / "request limit reached" | The shared workshop key is rate-limited. Wait a minute and retry, and ask the host if it keeps happening |
 
 **Start over:** this deletes all your n8n data and runs the first-time setup again: `docker volume rm n8n_data`, then start n8n again.
 
